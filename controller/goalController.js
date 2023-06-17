@@ -88,66 +88,65 @@ export const getSingleGoal = BigPromise(async (req, res, next) => {
 
 // Update goal
 export const editGoal = BigPromise(async (req, res, next) => {
-    const { title, days, startDate, endDate, tasks } = req.body;
-    const goalID = req.params.id;
-  
-    if (!req.user) {
-      throw new CustomError("User is not logged in", 400);
-    }
-  
-    // Create an array of task objects
-    const taskObjects = tasks.map((task) => ({
-      task: {
-        title: task.title,
-        currentStatus: false,
-        prevStatus: false,
-      },
-    }));
-  
-    const updateGoal = {
-      title,
-      days: [...days],
-      duration: {
-        start_Date: startDate,
-        end_Date: endDate,
-      },
-      tasks: taskObjects,
-      user: req.user, // Assuming req.user contains the logged-in user's information
-      editGoal: false,
-    };
-  
-    const goal = await Goal.findOneAndUpdate({ _id: goalID }, updateGoal, {
-      new: true,
-      runValidators: true,
-    });
-  
-    if (!goal) {
-      return res.status(400).send({ msg: `Goal not found with id: ${goalID}` });
-    }
-  
-    res.status(200).send({ status: "success", goal });
+  const { title, days, startDate, endDate, tasks } = req.body;
+  const goalID = req.params.id;
+
+  if (!req.user) {
+    throw new CustomError("User is not logged in", 400);
+  }
+
+  // Create an array of task objects
+  const taskObjects = tasks.map((task) => ({
+    task: {
+      title: task.title,
+      currentStatus: false,
+      prevStatus: false,
+    },
+  }));
+
+  const updateGoal = {
+    title,
+    days: [...days],
+    duration: {
+      start_Date: startDate,
+      end_Date: endDate,
+    },
+    tasks: taskObjects,
+    user: req.user, // Assuming req.user contains the logged-in user's information
+    editGoal: false,
+  };
+
+  const goal = await Goal.findOneAndUpdate({ _id: goalID }, updateGoal, {
+    new: true,
+    runValidators: true,
   });
 
-  export const updateTaskStatus = async (req, res) => {
-    try {
-      const { goalId, taskId, newStatus } = req.body; // Assuming the goalId, taskId, and newStatus are provided in the request body
-  
-      // Find the goal document and update the task status
-      const updatedGoal = await Goal.findOneAndUpdate(
-        { _id: goalId, "tasks._id": taskId },
-        { $set: { "tasks.$.task.status": newStatus } },
-        { new: true }
-      );
-  
-      if (!updatedGoal) {
-        return res.status(404).json({ error: "Goal or task not found" });
-      }
-  
-      return res.status(200).json(updatedGoal);
-    } catch (error) {
-      console.error("Error updating task status:", error);
-      return res.status(500).json({ error: "Internal server error" });
+  if (!goal) {
+    return res.status(400).send({ msg: `Goal not found with id: ${goalID}` });
+  }
+
+  res.status(200).send({ status: "success", goal });
+});
+
+//Update Task Status
+export const updateTaskStatus = async (req, res) => {
+  try {
+    const { goalId, taskId, newStatus } = req.body; // Assuming the goalId, taskId, and newStatus are provided in the request body
+
+    // Find the goal document and update the task status
+    const updatedGoal = await Goal.findOneAndUpdate(
+      { _id: goalId, "tasks._id": taskId },
+      { $set: { "tasks.$.task.status": newStatus } },
+      { new: true }
+    );
+
+    if (!updatedGoal) {
+      return res.status(404).json({ error: "Goal or task not found" });
     }
-  };
-  
-  
+
+    return res.status(200).json(updatedGoal);
+  } catch (error) {
+    console.error("Error updating task status:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+};
