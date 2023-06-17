@@ -14,7 +14,7 @@ import goal from "./route/goal.js"
 import { connectWithDB } from "./config/database.js";
 connectWithDB();
 const app = express();
-const { PORT } = process.env;
+const PORT  = process.env.PORT || 8090;
 
 //regular middleware
 app.use(express.json());
