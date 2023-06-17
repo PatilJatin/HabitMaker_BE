@@ -3,7 +3,7 @@ import BigPromise from "../middleware/BigPromise.js";
 import CustomError from "../util/customError.js";
 import cookieToken from "../util/cookieToken.js";
 import cloudinary from "cloudinary";
-import nodemailer from 'nodemailer';
+import nodemailer from "nodemailer";
 import mailHelper from "../util/emailHelper.js";
 import crypto from "crypto";
 
@@ -14,7 +14,7 @@ export const signup = BigPromise(async (req, res, next) => {
 
   const { name, email, password } = req.body;
 
-  if (!email) {
+  if (!email || !name || !password) {
     return next(new CustomError("Email, Name and Password required", 400));
   }
 
