@@ -7,6 +7,8 @@ import nodemailer from "nodemailer";
 import mailHelper from "../util/emailHelper.js";
 import crypto from "crypto";
 
+
+//signup user
 export const signup = BigPromise(async (req, res, next) => {
   if (!req.files) {
     return next(new CustomError("photo is required for signup", 400));
@@ -37,6 +39,7 @@ export const signup = BigPromise(async (req, res, next) => {
   cookieToken(user, res);
 });
 
+//user Login
 export const login = BigPromise(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -64,6 +67,7 @@ export const login = BigPromise(async (req, res, next) => {
   cookieToken(user, res);
 });
 
+//logout user
 export const logout = BigPromise(async (req, res, next) => {
   res.cookie("token", null, {
     expires: new Date(Date.now()),
@@ -76,6 +80,8 @@ export const logout = BigPromise(async (req, res, next) => {
   });
 });
 
+
+//Forgot Password
 export const forgotPassword = BigPromise(async (req, res, next) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
@@ -115,6 +121,8 @@ export const forgotPassword = BigPromise(async (req, res, next) => {
   }
 });
 
+
+//Reseat Password
 export const passwordReset = BigPromise(async (req, res, next) => {
   const { token } = req.params;
   const ecryptToken = crypto.createHash("sha256").update(token).digest("hex");
@@ -140,6 +148,9 @@ export const passwordReset = BigPromise(async (req, res, next) => {
 
   cookieToken(user, res);
 });
+
+
+//Get Single User 
 export const getLoggedInUserDetails = BigPromise(async (req, res, next) => {
   const user = await User.findById(req.user.id);
   res.status(200).json({
@@ -148,6 +159,7 @@ export const getLoggedInUserDetails = BigPromise(async (req, res, next) => {
   });
 });
 
+//Change Password
 export const changePassword = BigPromise(async (req, res, next) => {
   const userId = req.user.id;
   const user = await User.findById(userId).select("+password");
@@ -161,6 +173,8 @@ export const changePassword = BigPromise(async (req, res, next) => {
   await user.save();
   cookieToken(user, res);
 });
+
+//Update user
 export const updateUser = BigPromise(async (req, res, next) => {
   if (!req.body.email || !req.body.name) {
     return next(new CustomError("email and name fields are empty!", 400));
