@@ -39,7 +39,7 @@ const goalSchema = new mongoose.Schema({
           maxLength: [50, "Name should be under 50 Characters"],
           trim: true,
         },
-        status: { type: Boolean, default: false },
+        status: { type: Boolean, default: true },
       },
     },
   ],
